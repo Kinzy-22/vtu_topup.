@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.vtu_topup"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

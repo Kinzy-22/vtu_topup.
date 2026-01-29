@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:vtu_topup/apps/core/constant/app_color.dart';
 import 'package:vtu_topup/features/home/screens/home_screen.dart';
 import 'package:vtu_topup/features/home/screens/signup.dart';
-import 'package:vtu_topup/services/api_service.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -17,31 +16,22 @@ class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
-  void _loginUser() async {
+  void _loginUser() {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
-    final result = await ApiService.login(
-      _emailController.text.trim(),
-      _passwordController.text.trim(),
-    );
-
-    setState(() => _isLoading = false);
-
-    if (result['status'] == true) {
+    // Simulate a successful login for frontend-only demo
+    Future.delayed(const Duration(seconds: 1), () {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Login successful (simulated)")),
+      );
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => HomeScreen()),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result['message'] ?? 'Login failed'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    });
   }
 
   @override

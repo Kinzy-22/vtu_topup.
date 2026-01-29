@@ -47,8 +47,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = theme.colorScheme;
     return Scaffold(
-      backgroundColor: AppColor.textLight,
+      backgroundColor: color.surface,
       body: Column(
         children: [
           Expanded(

@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://10.142.54.214:8000/api';
+  static const String baseUrl = 'http://192.168.1.113:8000/api';
 
   static Future<bool> register(
     String name,

@@ -123,7 +123,7 @@ class _PayBillsScreenState extends State<PayBillsScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ViewMoreScreen(),
+                        builder: (context) =>  ViewmoreScreen(),
                       ),
                     );
                   },

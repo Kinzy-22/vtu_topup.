@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:vtu_topup/apps/core/constant/app_color.dart';
 import 'package:vtu_topup/features/home/screens/home_screen.dart';
 import 'package:vtu_topup/features/home/screens/login.dart';
-import 'package:vtu_topup/services/api_service.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -17,33 +16,22 @@ class _SignupState extends State<Signup> {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
   bool isLoading = false;
 
-  void handleSignup() async {
+  void handleSignup() {
     setState(() => isLoading = true);
-
-    final name = nameController.text.trim();
-    final email = emailController.text.trim();
-    final password = passwordController.text;
-
-    final result = await ApiService.signUp(name, email, password);
-
-    setState(() => isLoading = false);
-
-    if (result['status'] == true) {
+    
+    // Simulate a successful signup for frontend-only demo
+    Future.delayed(const Duration(seconds: 1), () {
+      setState(() => isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Registration successful")),
+        const SnackBar(content: Text("Registration successful (simulated)")),
       );
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => HomeScreen()),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(result['message'] ?? 'Signup failed')),
-      );
-    }
+    });
   }
 
   @override
@@ -85,14 +73,12 @@ class _SignupState extends State<Signup> {
                   ),
                 ),
               ),
-
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 40),
-
                     // Name
                     TextField(
                       controller: nameController,
@@ -105,7 +91,6 @@ class _SignupState extends State<Signup> {
                       ),
                     ),
                     const SizedBox(height: 16),
-
                     // Email
                     TextField(
                       controller: emailController,
@@ -118,7 +103,6 @@ class _SignupState extends State<Signup> {
                       ),
                     ),
                     const SizedBox(height: 16),
-
                     // Password
                     TextField(
                       controller: passwordController,
@@ -132,7 +116,6 @@ class _SignupState extends State<Signup> {
                       ),
                     ),
                     const SizedBox(height: 24),
-
                     // Submit
                     SizedBox(
                       width: double.infinity,
@@ -159,7 +142,6 @@ class _SignupState extends State<Signup> {
                       ),
                     ),
                     const SizedBox(height: 16),
-
                     // OR Divider
                     Row(
                       children: const [
@@ -172,7 +154,6 @@ class _SignupState extends State<Signup> {
                       ],
                     ),
                     const SizedBox(height: 16),
-
                     // Google Signup
                     SizedBox(
                       width: double.infinity,
@@ -189,7 +170,6 @@ class _SignupState extends State<Signup> {
                       ),
                     ),
                     const SizedBox(height: 12),
-
                     // Facebook Signup
                     SizedBox(
                       width: double.infinity,
@@ -210,7 +190,6 @@ class _SignupState extends State<Signup> {
                       ),
                     ),
                     const SizedBox(height: 24),
-
                     // Bottom Link
                     Center(
                       child: Row(

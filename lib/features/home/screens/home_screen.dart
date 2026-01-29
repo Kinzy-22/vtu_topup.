@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vtu_topup/features/home/screens/history.dart';
 import 'package:vtu_topup/features/more/moreScreen.dart';
 import 'package:vtu_topup/features/more/notifications.dart';
@@ -12,7 +11,6 @@ import 'package:vtu_topup/features/topup/screens/cableScreen.dart';
 import 'package:vtu_topup/features/topup/screens/data_topup_screen.dart';
 import 'package:vtu_topup/features/topup/screens/electricity.dart';
 import 'package:vtu_topup/features/wallet/walletscreen.dart';
-import 'package:vtu_topup/services/api_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,44 +23,11 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedNavIndex = 0;
   String _username = "User";
   String _balance = "₦0";
-  bool _isLoading = true;
-  String _errorMessage = '';
 
   @override
   void initState() {
     super.initState();
-    _loadUserData();
-    fetchAndStoreUser();
-  }
-
-  Future<void> fetchAndStoreUser() async {
-    setState(() => _isLoading = true);
-    final result = await ApiService.getUser();
-    setState(() {
-      _isLoading = false;
-      if (result['status'] == true) {
-        _loadUserData();
-      } else {
-        _errorMessage = result['message'] ?? 'Failed to fetch user data';
-      }
-    });
-  }
-
-  Future<void> _loadUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _username = prefs.getString('name') ?? 'User';
-      _balance = prefs.getString('balance') ?? '₦0';
-    });
-  }
-
-  Future<void> _debugSharedPreferences() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    print('SharedPreferences:');
-    print('Token: ${prefs.getString('token')}');
-    print('Name: ${prefs.getString('name')}');
-    print('Email: ${prefs.getString('email')}');
-    print('Balance: ${prefs.getString('balance')}');
+    // Frontend-only: Using static/demo values (no backend or SharedPreferences)
   }
 
   @override
@@ -71,18 +36,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final color = theme.colorScheme;
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-
-    if (_isLoading) {
-      return Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (_errorMessage.isNotEmpty) {
-      return Scaffold(
-        body: Center(child: Text(_errorMessage)),
-      );
-    }
 
     return Scaffold(
       backgroundColor: color.surface,
@@ -101,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 MaterialPageRoute(builder: (_) => const ProfileScreen()),
               ),
               child: Text(
-                _username.isNotEmpty ? _username[0].toUpperCase() : 'U',
+                _username.isNotEmpty ? _username[0].toUpperCase() : 'E',
                 style: GoogleFonts.poppins(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -111,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           title: Text(
-            'Hello ${_username.isNotEmpty ? _username : 'User'}',
+            'Hello ${_username.isNotEmpty ? _username : 'Eddy'}',
             style: GoogleFonts.poppins(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -309,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const ViewMoreScreen()),
+                      MaterialPageRoute(builder: (_) => ViewmoreScreen()),
                     );
                   },
                   child: Text(
@@ -552,14 +505,111 @@ class NavigationDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-
-      drawer: SingleChildScrollView( 
+    return Drawer(
+      child: SingleChildScrollView(
         child: Column(
-       
-          
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              buildHeader(context),
+              buildMenuItems(context),
+            ],
+          ),
         ),
-      ),
-    );
+      );
   }
+   Widget buildHeader(BuildContext context) => Container(
+    padding: const EdgeInsets.all(16),
+    color: Theme.of(context).colorScheme.primaryContainer,
+    child: Column(
+      children: [
+       
+        CircleAvatar(
+          radius: 40,
+          backgroundColor: Colors.white,
+          child: TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
+              );
+            },
+            child: Text(
+              'U',
+              style: GoogleFonts.poppins(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.pink[800],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Hello User',
+          style: GoogleFonts.poppins(fontSize: 18, color: Colors.white),
+        ),
+      ],
+    ),
+   );
+      Widget buildMenuItems(BuildContext context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Wrap(
+          runSpacing: 16, // vertical spacing 
+          children: [
+            ListTile(
+              leading: const Icon(Icons.home, size: 24),
+              title: Text(
+                'Home',
+                style: GoogleFonts.poppins(fontSize: 16),
+              ),
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HomeScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.person, size: 24),
+              title: Text(
+                'Profile',
+                style: GoogleFonts.poppins(fontSize: 16),
+              ),
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.notifications, size: 24),
+              title: Text(
+                'Notifications',
+                style: GoogleFonts.poppins(fontSize: 16),
+              ),
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const NotificationScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings, size: 24),
+              title: Text(
+                'History',
+                style: GoogleFonts.poppins(fontSize: 16),
+              ),
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ViewmoreScreen()),
+                );
+              },
+            ),
+          ],
+        ),
+      );
+
 }

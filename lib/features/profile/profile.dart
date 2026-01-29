@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vtu_topup/features/profile/editprofile.dart';
-import 'package:vtu_topup/services/api_service.dart';
 
 class AppConstants {
   static const double padding = 20;
@@ -21,8 +19,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _name = 'User';
   String _email = '';
   double _balance = 0.0;
-  bool _isLoading = true;
-  String _errorMessage = '';
   static final _lastLogin = DateTime(2025, 7, 7, 15, 20);
 
   static final _currencyFormatter = NumberFormat.currency(
@@ -36,48 +32,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _loadUserData();
-    _fetchAndStoreUser();
-  }
-
-  Future<void> _fetchAndStoreUser() async {
-    setState(() => _isLoading = true);
-    final result = await ApiService.getUser();
-    setState(() {
-      _isLoading = false;
-      if (result['status'] == true) {
-        _loadUserData();
-      } else {
-        _errorMessage = result['message'] ?? 'Failed to fetch user data';
-      }
-    });
-  }
-
-  Future<void> _loadUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _name = prefs.getString('name') ?? 'User';
-      _email = prefs.getString('email') ?? '';
-      _balance = double.tryParse(prefs.getString('balance') ?? '0') ?? 0.0;
-    });
+    // Frontend-only: Using static/demo values
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-
-    if (_isLoading) {
-      return Scaffold(
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (_errorMessage.isNotEmpty) {
-      return Scaffold(
-        body: Center(child: Text(_errorMessage)),
-      );
-    }
 
     return Theme(
       data: theme.copyWith(
@@ -105,7 +66,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         body: SafeArea(
           child: RefreshIndicator(
-            onRefresh: _fetchAndStoreUser,
+            onRefresh: () async {
+              // Simulate refresh for frontend-only demo
+              await Future.delayed(const Duration(seconds: 1));
+            },
             child: ListView(
               padding: const EdgeInsets.all(AppConstants.padding),
               children: [
@@ -217,21 +181,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         leading: const Icon(Icons.logout, color: Colors.red),
                         title: const Text('Logout'),
                         trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.red),
-                        onTap: () async {
-                          final result = await ApiService.logout(
-                              (await SharedPreferences.getInstance()).getString('token') ?? '');
-                          if (result['status'] == true) {
-                            SharedPreferences prefs = await SharedPreferences.getInstance();
-                            await prefs.clear();
+                        onTap: () {
+                          // Simulate logout for frontend-only demo
+                          Future.delayed(const Duration(seconds: 1), () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Logged out successfully (simulated)')),
+                            );
                             Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Logged out successfully')),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(result['message'] ?? 'Logout failed')),
-                            );
-                          }
+                          });
                         },
                       ),
                     ],
